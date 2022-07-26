@@ -13,14 +13,14 @@ export const MessageComposer = {
   encoded: {
     enableIDO(value: MsgEnableIDORequest) {
       return {
-        type_url: "/nebula.ido.MsgEnableIDORequest",
+        typeUrl: "/nebula.ido.MsgEnableIDORequest",
         value: MsgEnableIDORequest.encode(value).finish()
       };
     },
 
     commitParticipation(value: MsgCommitParticipationRequest) {
       return {
-        type_url: "/nebula.ido.MsgCommitParticipationRequest",
+        typeUrl: "/nebula.ido.MsgCommitParticipationRequest",
         value: MsgCommitParticipationRequest.encode(value).finish()
       };
     }

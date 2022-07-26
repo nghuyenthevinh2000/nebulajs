@@ -10,21 +10,21 @@ export const MessageComposer = {
   encoded: {
     createProject(value: MsgCreateProjectRequest) {
       return {
-        type_url: "/nebula.launchpad.MsgCreateProjectRequest",
+        typeUrl: "/nebula.launchpad.MsgCreateProjectRequest",
         value: MsgCreateProjectRequest.encode(value).finish()
       };
     },
 
     deleteProject(value: MsgDeleteProjectRequest) {
       return {
-        type_url: "/nebula.launchpad.MsgDeleteProjectRequest",
+        typeUrl: "/nebula.launchpad.MsgDeleteProjectRequest",
         value: MsgDeleteProjectRequest.encode(value).finish()
       };
     },
 
     withdrawAllTokens(value: MsgWithdrawAllTokensRequest) {
       return {
-        type_url: "/nebula.launchpad.MsgWithdrawAllTokensRequest",
+        typeUrl: "/nebula.launchpad.MsgWithdrawAllTokensRequest",
         value: MsgWithdrawAllTokensRequest.encode(value).finish()
       };
     }
