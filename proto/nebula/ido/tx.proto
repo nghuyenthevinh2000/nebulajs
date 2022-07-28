@@ -37,7 +37,8 @@ message MsgEnableIDORequest {
     ];
 
     repeated AllocationLimit allocation_limit = 5 [
-        (gogoproto.moretags) = "yaml:\"allocation_limit\""
+        (gogoproto.moretags) = "yaml:\"allocation_limit\"",
+        (gogoproto.nullable) = false
     ];
 
     // Begin time for this ido

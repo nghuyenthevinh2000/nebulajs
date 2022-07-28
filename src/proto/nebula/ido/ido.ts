@@ -1,11 +1,19 @@
 import { Coin } from "../../cosmos/base/v1beta1/coin";
 import { Timestamp } from "../../google/protobuf/timestamp";
 import * as _m0 from "protobufjs/minimal";
-import { isSet, DeepPartial, toTimestamp, Long, fromTimestamp, fromJsonTimestamp } from "@osmonauts/helpers";
+import { isSet, DeepPartial, toTimestamp, Long, fromTimestamp, fromJsonTimestamp, isObject } from "@osmonauts/helpers";
 export interface AllocationLimit {
   denom: string;
   lowerLimit: Coin;
   upperLimit: Coin;
+}
+export interface Entry {
+  participant: string;
+  commitAmount: Coin[];
+}
+export interface IDO_EntriesEntry {
+  key: string;
+  value: Entry;
 }
 export interface IDO {
   /** Project unique id of each project */
@@ -18,6 +26,11 @@ export interface IDO {
 
   /** Begin time for this ido */
   startTime: Date;
+
+  /** Record entry of participant */
+  entries: {
+    [key: string]: Entry;
+  };
 }
 
 function createBaseAllocationLimit(): AllocationLimit {
@@ -101,6 +114,150 @@ export const AllocationLimit = {
 
 };
 
+function createBaseEntry(): Entry {
+  return {
+    participant: "",
+    commitAmount: []
+  };
+}
+
+export const Entry = {
+  encode(message: Entry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.participant !== "") {
+      writer.uint32(10).string(message.participant);
+    }
+
+    for (const v of message.commitAmount) {
+      Coin.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Entry {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseEntry();
+
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+
+      switch (tag >>> 3) {
+        case 1:
+          message.participant = reader.string();
+          break;
+
+        case 2:
+          message.commitAmount.push(Coin.decode(reader, reader.uint32()));
+          break;
+
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+
+    return message;
+  },
+
+  fromJSON(object: any): Entry {
+    return {
+      participant: isSet(object.participant) ? String(object.participant) : "",
+      commitAmount: Array.isArray(object?.commitAmount) ? object.commitAmount.map((e: any) => Coin.fromJSON(e)) : []
+    };
+  },
+
+  toJSON(message: Entry): unknown {
+    const obj: any = {};
+    message.participant !== undefined && (obj.participant = message.participant);
+
+    if (message.commitAmount) {
+      obj.commitAmount = message.commitAmount.map(e => e ? Coin.toJSON(e) : undefined);
+    } else {
+      obj.commitAmount = [];
+    }
+
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<Entry>): Entry {
+    const message = createBaseEntry();
+    message.participant = object.participant ?? "";
+    message.commitAmount = object.commitAmount?.map(e => Coin.fromPartial(e)) || [];
+    return message;
+  }
+
+};
+
+function createBaseIDO_EntriesEntry(): IDO_EntriesEntry {
+  return {
+    key: "",
+    value: undefined
+  };
+}
+
+export const IDO_EntriesEntry = {
+  encode(message: IDO_EntriesEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+
+    if (message.value !== undefined) {
+      Entry.encode(message.value, writer.uint32(18).fork()).ldelim();
+    }
+
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): IDO_EntriesEntry {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseIDO_EntriesEntry();
+
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+
+      switch (tag >>> 3) {
+        case 1:
+          message.key = reader.string();
+          break;
+
+        case 2:
+          message.value = Entry.decode(reader, reader.uint32());
+          break;
+
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+
+    return message;
+  },
+
+  fromJSON(object: any): IDO_EntriesEntry {
+    return {
+      key: isSet(object.key) ? String(object.key) : "",
+      value: isSet(object.value) ? Entry.fromJSON(object.value) : undefined
+    };
+  },
+
+  toJSON(message: IDO_EntriesEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value ? Entry.toJSON(message.value) : undefined);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<IDO_EntriesEntry>): IDO_EntriesEntry {
+    const message = createBaseIDO_EntriesEntry();
+    message.key = object.key ?? "";
+    message.value = object.value !== undefined && object.value !== null ? Entry.fromPartial(object.value) : undefined;
+    return message;
+  }
+
+};
+
 function createBaseIDO(): IDO {
   return {
     projectId: Long.UZERO,
@@ -109,7 +266,8 @@ function createBaseIDO(): IDO {
     tokenListingPrice: [],
     idoStatus: Long.UZERO,
     allocationLimit: [],
-    startTime: undefined
+    startTime: undefined,
+    entries: {}
   };
 }
 
@@ -143,6 +301,12 @@ export const IDO = {
       Timestamp.encode(toTimestamp(message.startTime), writer.uint32(58).fork()).ldelim();
     }
 
+    Object.entries(message.entries).forEach(([key, value]) => {
+      IDO_EntriesEntry.encode({
+        key: (key as any),
+        value
+      }, writer.uint32(66).fork()).ldelim();
+    });
     return writer;
   },
 
@@ -183,6 +347,15 @@ export const IDO = {
           message.startTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           break;
 
+        case 8:
+          const entry8 = IDO_EntriesEntry.decode(reader, reader.uint32());
+
+          if (entry8.value !== undefined) {
+            message.entries[entry8.key] = entry8.value;
+          }
+
+          break;
+
         default:
           reader.skipType(tag & 7);
           break;
@@ -200,7 +373,13 @@ export const IDO = {
       tokenListingPrice: Array.isArray(object?.tokenListingPrice) ? object.tokenListingPrice.map((e: any) => Coin.fromJSON(e)) : [],
       idoStatus: isSet(object.idoStatus) ? Long.fromString(object.idoStatus) : Long.UZERO,
       allocationLimit: Array.isArray(object?.allocationLimit) ? object.allocationLimit.map((e: any) => AllocationLimit.fromJSON(e)) : [],
-      startTime: isSet(object.startTime) ? fromJsonTimestamp(object.startTime) : undefined
+      startTime: isSet(object.startTime) ? fromJsonTimestamp(object.startTime) : undefined,
+      entries: isObject(object.entries) ? Object.entries(object.entries).reduce<{
+        [key: string]: Entry;
+      }>((acc, [key, value]) => {
+        acc[key] = Entry.fromJSON(value);
+        return acc;
+      }, {}) : {}
     };
   },
 
@@ -235,6 +414,14 @@ export const IDO = {
     }
 
     message.startTime !== undefined && (obj.startTime = message.startTime.toISOString());
+    obj.entries = {};
+
+    if (message.entries) {
+      Object.entries(message.entries).forEach(([k, v]) => {
+        obj.entries[k] = Entry.toJSON(v);
+      });
+    }
+
     return obj;
   },
 
@@ -247,6 +434,15 @@ export const IDO = {
     message.idoStatus = object.idoStatus !== undefined && object.idoStatus !== null ? Long.fromValue(object.idoStatus) : Long.UZERO;
     message.allocationLimit = object.allocationLimit?.map(e => AllocationLimit.fromPartial(e)) || [];
     message.startTime = object.startTime ?? undefined;
+    message.entries = Object.entries(object.entries ?? {}).reduce<{
+      [key: string]: Entry;
+    }>((acc, [key, value]) => {
+      if (value !== undefined) {
+        acc[key] = Entry.fromPartial(value);
+      }
+
+      return acc;
+    }, {});
     return message;
   }
 

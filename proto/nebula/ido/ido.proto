@@ -26,6 +26,18 @@ message AllocationLimit {
     ];
 }
 
+message Entry {
+    string participant = 1 [
+        (gogoproto.moretags) = "yaml:\"participant\""
+    ];
+
+    repeated cosmos.base.v1beta1.Coin commit_amount = 2 [
+        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+        (gogoproto.moretags) = "yaml:\"commit_amount\"",
+        (gogoproto.nullable) = false
+    ];
+}
+
 message IDO {
     option (gogoproto.goproto_getters) = false;
     option (gogoproto.goproto_stringer) = false;
@@ -59,7 +71,8 @@ message IDO {
     ];
 
     repeated AllocationLimit allocation_limit = 6 [
-        (gogoproto.moretags) = "yaml:\"allocation_limit\""
+        (gogoproto.moretags) = "yaml:\"allocation_limit\"",
+        (gogoproto.nullable) = false
     ];
 
     // Begin time for this ido
@@ -67,5 +80,11 @@ message IDO {
         (gogoproto.stdtime) = true,
         (gogoproto.nullable) = false,
         (gogoproto.moretags) = "yaml:\"start_time\""
+    ];
+
+    // Record entry of participant
+    map<string, Entry> entries = 8 [
+        (gogoproto.moretags) = "yaml:\"entries\"",
+        (gogoproto.nullable) = false
     ];
 }
