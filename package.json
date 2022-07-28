@@ -1,7 +1,7 @@
 {
   "name": "@nghuyenthevinh2000/nebulajs",
-  "version": "0.0.1",
-  "description": "descriptin",
+  "version": "0.0.2",
+  "description": "JS library for interacting with Nebula chain",
   "author": "nguyen the vinh <nghuyenthevinh@gmail.com>",
   "homepage": "https://github.com/nghuyenthevinh2000/nebulajs#readme",
   "license": "SEE LICENSE IN LICENSE",
