@@ -33,7 +33,7 @@
     "test:debug": "node --inspect node_modules/.bin/jest --runInBand"
   },
   "publishConfig": {
-    "access": "restricted"
+    "access": "public"
   },
   "repository": {
     "type": "git",
